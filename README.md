@@ -28,7 +28,7 @@ MiniClaudeCode 是一个基于 Anthropic API 的模块化命令行编码 Agent�
 git clone https://github.com/<你的GitHub用户名>/MiniClaudeCode.git
 cd MiniClaudeCode
 python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -e ".[test]"
+.\.venv\Scripts\python.exe -m pip install -e .
 Copy-Item .env.example .env
 ```
 
@@ -79,7 +79,6 @@ MiniClaudeCode/
 │   ├── tools.py
 │   ├── agents.py
 │   └── ...
-└── tests/
 ```
 
 运行过程中可能产生以下本地数据，它们默认不会提交到 Git：
@@ -91,15 +90,12 @@ MiniClaudeCode/
 - `.memory/MEMORY.md`：用户维护的长期记忆。
 - `.task_outputs/`：较大的工具输出。
 
-## 测试
+## 基本检查
 
 ```powershell
-.\.venv\Scripts\python.exe -m pytest
 .\.venv\Scripts\python.exe -m compileall -q mini_claude_code code.py
 .\.venv\Scripts\python.exe code.py --help
 ```
-
-自动测试使用假模型客户端，不发送真实 API 请求。
 
 ## 发布到 GitHub
 

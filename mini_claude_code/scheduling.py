@@ -45,7 +45,6 @@ class BackgroundTaskManager:
             "pip install",
             "npm install",
             "cargo build",
-            "pytest",
             "make",
         )
         return any(keyword in command for keyword in keywords)
