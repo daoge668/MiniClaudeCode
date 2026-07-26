@@ -18,12 +18,13 @@ MiniClaudeCode 是一个基于 Anthropic API 的模块化命令行编码 Agent�
 
 - Python 3.10 或更高版本。
 - Anthropic API Key 和可用模型 ID。
+- 启用 RAG 时需要 Docker Desktop（或兼容的 Docker Engine 与 Compose）。
 - 使用 Worktree 功能时需要 Git。
 
 ## 安装
 
 ```powershell
-git clone https://github.com/<你的GitHub用户名>/MiniClaudeCode.git
+git clone https://github.com/daoge668/MiniClaudeCode.git
 cd MiniClaudeCode
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
