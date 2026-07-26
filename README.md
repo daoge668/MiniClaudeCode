@@ -28,8 +28,8 @@ MiniClaudeCode 是一个基于 Anthropic API 的模块化命令行编码 Agent�
 git clone https://github.com/<你的GitHub用户名>/MiniClaudeCode.git
 cd MiniClaudeCode
 python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -e .
-Copy-Item .env.example .env
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+New-Item .env
 ```
 
 编辑 `.env`：
@@ -44,6 +44,7 @@ ANTHROPIC_API_KEY=你的API密钥
 ```
 
 `.env` 包含敏感信息，已被 `.gitignore` 排除，禁止提交到 GitHub。
+这里的 `pip` 只安装第三方依赖，不会安装 MiniClaudeCode 项目本身。
 
 ## 启动
 
@@ -51,17 +52,16 @@ ANTHROPIC_API_KEY=你的API密钥
 .\.venv\Scripts\python.exe code.py
 ```
 
-也可以使用包入口或安装后的命令：
+也可以使用模块入口：
 
 ```powershell
 .\.venv\Scripts\python.exe -m mini_claude_code
-mini-claude-code
 ```
 
 默认把项目目录作为工作区。使用其他目录：
 
 ```powershell
-mini-claude-code --workdir C:\path\to\workspace
+.\.venv\Scripts\python.exe code.py --workdir C:\path\to\workspace
 ```
 
 输入问题后按回车发送；输入 `q`、`exit` 或空行退出。
@@ -71,8 +71,7 @@ mini-claude-code --workdir C:\path\to\workspace
 ```text
 MiniClaudeCode/
 ├── code.py
-├── pyproject.toml
-├── .env.example
+├── requirements.txt
 ├── mini_claude_code/
 │   ├── cli.py
 │   ├── runtime.py

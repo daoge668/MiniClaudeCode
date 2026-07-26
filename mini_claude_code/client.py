@@ -31,7 +31,8 @@ class AnthropicGateway:
             from anthropic import Anthropic
         except ImportError as exc:  # pragma: no cover - installation guidance
             raise ConfigurationError(
-                "Missing dependency 'anthropic'. Run: pip install -e ."
+                "Missing dependency 'anthropic'. "
+                "Run: pip install -r requirements.txt"
             ) from exc
 
         kwargs: dict[str, Any] = {}

@@ -44,14 +44,15 @@ class Settings:
             from dotenv import load_dotenv
         except ImportError as exc:  # pragma: no cover - installation guidance
             raise ConfigurationError(
-                "Missing dependency 'python-dotenv'. Run: pip install -e ."
+                "Missing dependency 'python-dotenv'. "
+                "Run: pip install -r requirements.txt"
             ) from exc
 
         load_dotenv(project / ".env", override=True)
         model_id = os.getenv("MODEL_ID", "").strip()
         if not model_id:
             raise ConfigurationError(
-                "MODEL_ID is required. Copy .env.example to .env and set it."
+                "MODEL_ID is required. Create a .env file and set it."
             )
 
         base_url = os.getenv("ANTHROPIC_BASE_URL") or None

@@ -43,7 +43,7 @@ class Terminal:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="mini-claude-code",
+        prog="MiniClaudeCode",
         description="MiniClaudeCode command-line coding agent",
     )
     parser.add_argument(
