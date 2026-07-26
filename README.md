@@ -4,9 +4,6 @@ MiniClaudeCode 是一个基于 Anthropic API 的模块化命令行编码 Agent�
 文件和命令工具、任务依赖、Git Worktree、技能加载、权限钩子、子代理与队友、
 上下文压缩、后台任务、Cron 调度、记忆以及可动态发现的 MCP 工具。
 
-> MiniClaudeCode 是独立开发的开源项目，不隶属于 Anthropic，也未获得
-> Anthropic 官方认可。“Claude”是 Anthropic 的商标。
-
 ## 功能
 
 - 通过统一权限管线执行命令和文件操作。
@@ -88,27 +85,3 @@ MiniClaudeCode/
 - `.transcripts/`：上下文压缩前的会话记录。
 - `.memory/MEMORY.md`：用户维护的长期记忆。
 - `.task_outputs/`：较大的工具输出。
-
-## 基本检查
-
-```powershell
-.\.venv\Scripts\python.exe -m compileall -q mini_claude_code code.py
-.\.venv\Scripts\python.exe code.py --help
-```
-
-## 发布到 GitHub
-
-确认 `.env` 和运行数据未被跟踪后：
-
-```powershell
-git init
-git branch -M main
-git add .
-git status
-git commit -m "Initial release"
-git remote add origin https://github.com/<你的GitHub用户名>/MiniClaudeCode.git
-git push -u origin main
-```
-
-公开仓库之前还应选择并添加许可证。没有 `LICENSE` 时，其他人可以查看代码，
-但默认没有复制、修改或再发布代码的许可。
