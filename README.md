@@ -27,29 +27,20 @@ git clone https://github.com/<你的GitHub用户名>/MiniClaudeCode.git
 cd MiniClaudeCode
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-New-Item .env
+Copy-Item .env.example .env
 ```
 
-编辑 `.env`：
+编辑 `.env`。主模型配置必填，RAG 配置可按需启用：
 
 ```dotenv
 MODEL_ID=你的模型ID
 ANTHROPIC_API_KEY=你的API密钥
 
-# 可选
+# 主模型可选项
 # FALLBACK_MODEL_ID=备用模型ID
 # ANTHROPIC_BASE_URL=https://api.anthropic.com
-```
 
-`.env` 包含敏感信息，已被 `.gitignore` 排除，禁止提交到 GitHub。
-这里的 `pip` 只安装第三方依赖，不会安装 MiniClaudeCode 项目本身。
-
-## 项目知识库（RAG）
-
-RAG 默认是可选功能。配置项示例见 `.env.rag.example`。当前配置使用
-OpenAI-compatible embedding 接口，推荐模型：
-
-```dotenv
+# 项目知识库
 RAG_ENABLED=true
 MILVUS_URI=http://127.0.0.1:19530
 MILVUS_TOKEN=root:Milvus
@@ -60,7 +51,17 @@ RERANK_ENABLED=true
 RERANK_URL=https://dashscope.aliyuncs.com/api/v1/services/rerank/text-rerank/text-rerank
 RERANK_MODEL=qwen3-vl-rerank
 RERANK_CANDIDATES=20
+RERANK_TIMEOUT_SECONDS=30
 ```
+
+`.env.example` 是唯一的配置模板，不包含真实密钥；`.env` 包含本机密钥并已被
+`.gitignore` 排除，禁止提交到 GitHub。这里的 `pip` 只安装第三方依赖，不会
+安装 MiniClaudeCode 项目本身。
+
+## 项目知识库（RAG）
+
+RAG 默认是可选功能，使用 OpenAI-compatible embedding 接口。当前推荐
+`qwen3.7-text-embedding` 生成向量，`qwen3-vl-rerank` 对召回结果重排。
 
 先启动 Docker Desktop，再启动 Milvus：
 
@@ -72,6 +73,10 @@ docker compose -f docker-compose.rag.yml ps
 把项目私有资料放入 `resources/`。程序每次启动时只同步有变化的文件，运行期间
 不会监听文件变化；要让修改后的资料生效，需要重启程序。索引和 Milvus 数据保存在
 本地 `.rag/`，不会提交到 Git。程序不会自动启动或删除 Docker 容器。
+
+首次使用时，等待 `docker compose ... ps` 中三个服务都显示为健康，再启动
+MiniClaudeCode。启动日志出现 RAG 同步统计后，主 Agent、focused subagent 和
+teammate 会共享同一份索引快照，并可自主调用 `search_project_knowledge`。
 
 Milvus 不可用时，RAG 工具不会注册，其他 Agent 功能仍可运行。embedding 服务暂时
 不可用但已有集合时，检索会退化为本地 BM25。启用重排后，系统会把 RRF 或 BM25
@@ -102,9 +107,11 @@ Milvus 不可用时，RAG 工具不会注册，其他 Agent 功能仍可运行�
 
 ```text
 MiniClaudeCode/
+├── .env.example
 ├── code.py
 ├── docker-compose.rag.yml
 ├── resources/
+│   └── rag-usage.md
 ├── requirements.txt
 ├── mini_claude_code/
 │   ├── rag/

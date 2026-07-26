@@ -71,8 +71,8 @@ class Application:
         self._cron_consumer: threading.Thread | None = None
         self._rounds_since_todo = 0
 
-        # Services are assigned during start(), keeping construction side-effect
-        # free and making import/lifecycle tests straightforward.
+        # Services are assigned during start(), so construction stays
+        # side-effect free.
         self.tasks: TaskRepository
         self.files: FileTools
         self.todos: TodoStore
