@@ -9,6 +9,9 @@ from .hooks import HookPipeline
 from .mcp import MCPRegistry
 from .messaging import MessageBus, ProtocolManager
 from .models import ToolCall
+from .rag.service import RagService
+from .rag.tool import definitions_for as rag_definitions_for
+from .rag.tool import handlers_for as rag_handlers_for
 from .scheduling import BackgroundTaskManager, CronScheduler
 from .skills import SkillRegistry
 from .workspace import (
@@ -322,6 +325,7 @@ class ToolRegistry:
         cron: CronScheduler,
         mcp: MCPRegistry,
         printer: Callable[[str], None] = print,
+        rag: RagService | None = None,
     ):
         self.settings = settings
         self.tasks = tasks
@@ -334,6 +338,7 @@ class ToolRegistry:
         self.cron = cron
         self.mcp = mcp
         self.printer = printer
+        self.rag = rag
         self._agents: AgentService | None = None
 
     def set_agent_service(self, agents: "AgentService") -> None:
@@ -341,7 +346,7 @@ class ToolRegistry:
 
     @property
     def definitions(self) -> list[dict]:
-        return list(TOOL_DEFINITIONS)
+        return [*TOOL_DEFINITIONS, *rag_definitions_for(self.rag)]
 
     def tool_names(self) -> list[str]:
         definitions, _ = self.build()
@@ -425,7 +430,7 @@ class ToolRegistry:
         return "\n".join(lines)
 
     def _handlers(self) -> dict[str, Callable[..., Any]]:
-        return {
+        handlers: dict[str, Callable[..., Any]] = {
             "bash": self.files.run_bash,
             "read_file": self.files.read_file,
             "write_file": self.files.write_file,
@@ -453,6 +458,8 @@ class ToolRegistry:
             "keep_worktree": self.worktrees.keep,
             "connect_mcp": self.mcp.connect,
         }
+        handlers.update(rag_handlers_for(self.rag))
+        return handlers
 
     def build(self) -> tuple[list[dict], dict[str, Callable[..., Any]]]:
         definitions = self.definitions

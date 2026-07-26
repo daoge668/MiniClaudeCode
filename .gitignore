@@ -12,3 +12,4 @@ __pycache__/
 .transcripts/
 .task_outputs/
 .scheduled_tasks.json
+.rag/

@@ -9,6 +9,8 @@ from typing import Callable
 import yaml
 
 from .config import Settings
+from .rag.tool import SYSTEM_GUIDANCE as RAG_SYSTEM_GUIDANCE
+from .rag.tool import TOOL_NAME as RAG_TOOL_NAME
 
 
 class SkillRegistry:
@@ -89,6 +91,8 @@ class PromptAssembler:
             + self.skills.list_text()
             + "\nUse load_skill(name) when a skill is relevant.",
         ]
+        if RAG_TOOL_NAME in self.tool_names():
+            sections.append(RAG_SYSTEM_GUIDANCE)
         if context.get("memories"):
             sections.append(f"Relevant memories:\n{context['memories']}")
         connected = self.mcp_names()

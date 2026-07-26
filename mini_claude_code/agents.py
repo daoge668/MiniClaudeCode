@@ -12,8 +12,33 @@ from typing import Any, Callable
 from .client import ModelGateway, block_type, extract_text, has_tool_use
 from .config import Settings
 from .messaging import MessageBus, ProtocolManager
+from .rag.tool import SYSTEM_GUIDANCE as RAG_SYSTEM_GUIDANCE
+from .rag.tool import TOOL_NAME as RAG_TOOL_NAME
 from .tools import ToolDispatcher, ToolRegistry, _object_schema
 from .workspace import FileTools, TaskRepository, WorktreeService
+
+FOCUSED_TOOL_NAMES = frozenset(
+    {
+        "bash",
+        "read_file",
+        "write_file",
+        "edit_file",
+        "glob",
+        RAG_TOOL_NAME,
+    }
+)
+TEAMMATE_TOOL_NAMES = frozenset(
+    {
+        "bash",
+        "read_file",
+        "write_file",
+        "send_message",
+        "list_tasks",
+        "claim_task",
+        "complete_task",
+        RAG_TOOL_NAME,
+    }
+)
 
 
 def _block_value(block: Any, name: str, default: Any = None) -> Any:
@@ -74,13 +99,14 @@ class AgentService:
 
     def spawn_subagent(self, description: str) -> str:
         messages: list[dict] = [{"role": "user", "content": description}]
-        names = {"bash", "read_file", "write_file", "edit_file", "glob"}
-        tools = self._definitions_for(names)
+        tools = self._definitions_for(set(FOCUSED_TOOL_NAMES))
         system = (
             f"You are a coding subagent at {self.settings.workdir}. "
             "Complete the task, then return a concise final summary. "
             "Do not spawn more agents."
         )
+        if any(tool["name"] == RAG_TOOL_NAME for tool in tools):
+            system += f" {RAG_SYSTEM_GUIDANCE}"
         for _ in range(30):
             try:
                 response = self.gateway_provider().create_message(
@@ -268,16 +294,9 @@ class AgentService:
             f"You are '{name}', a {role}. Use tools to complete tasks. "
             "If a task has a worktree, work in that directory."
         )
-        teammate_names = {
-            "bash",
-            "read_file",
-            "write_file",
-            "send_message",
-            "list_tasks",
-            "claim_task",
-            "complete_task",
-        }
-        tools = self._definitions_for(teammate_names)
+        tools = self._definitions_for(set(TEAMMATE_TOOL_NAMES))
+        if any(tool["name"] == RAG_TOOL_NAME for tool in tools):
+            system += f" {RAG_SYSTEM_GUIDANCE}"
         tools.append(
             {
                 "name": "submit_plan",

@@ -21,6 +21,7 @@ from .hooks import HookPipeline, register_default_hooks
 from .mcp import MCPRegistry
 from .messaging import MessageBus, ProtocolManager
 from .models import RecoveryState
+from .rag import RagConfig, RagService
 from .scheduling import BackgroundTaskManager, CronScheduler
 from .skills import PromptAssembler, SkillRegistry
 from .tools import ToolDispatcher, ToolRegistry
@@ -83,6 +84,7 @@ class Application:
         self.background: BackgroundTaskManager
         self.cron: CronScheduler
         self.mcp: MCPRegistry
+        self.rag: RagService
         self.registry: ToolRegistry
         self.dispatcher: ToolDispatcher
         self.agents: AgentService
@@ -109,6 +111,10 @@ class Application:
         self.gateway = self._provided_gateway or AnthropicGateway.from_settings(
             self.settings
         )
+        self.rag = RagService(
+            RagConfig.from_env(self.settings.project_dir),
+            printer=self.printer,
+        ).start()
 
         self.tasks = TaskRepository(
             self.settings.tasks_dir, printer=self.printer
@@ -156,6 +162,7 @@ class Application:
             self.cron,
             self.mcp,
             printer=self.printer,
+            rag=self.rag,
         )
         self.dispatcher = ToolDispatcher(
             self.registry, self.hooks, self.background
